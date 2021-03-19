@@ -1,8 +1,8 @@
-# cAdvisor for ARM (https://github.com/google/cadvisor)
-
+[![Docker Image CI](https://github.com/nazmang/cadvisor-docker/actions/workflows/docker-image.yml/badge.svg)](https://github.com/nazmang/cadvisor-docker/actions/workflows/docker-image.yml)
+# cAdvisor for ARM (https://github.com/google/cadvisor) 
 Forked from https://github.com/ZCube/cadvisor-docker
 
-* arm/v6, arm/v7, arm64 supported
+* arm/v6, arm/v7, arm64, i386/amd64 supported
 * Raspberry Pi tested
 * latest (v0.37.0) release build (2021-03-12)
 
