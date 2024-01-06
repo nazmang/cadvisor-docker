@@ -1,0 +1,60 @@
+pipeline {
+    agent any
+    
+    triggers {
+        cron('H 0 * * *') // Runs the pipeline daily at midnight
+    }
+
+    stages {
+        stage('Check for new tags') {
+            steps {
+                script {
+                    def cadvisorRepo = 'https://github.com/google/cadvisor.git'
+                    def myRepo = 'git@github.com:nazmang/cadvisor-docker.git'
+                    def repositoryName = myRepo.tokenize('/')[-1].tokenize('.')[0]
+
+                    cleanWs()
+
+                    // Fetch tags from the cadvisor repository
+                    def tagsOutput = sh(script: "git ls-remote --tags ${cadvisorRepo}", returnStdout: true).trim()
+
+                    // Extract existing tags from the output atching the pattern vX.XX.X
+                    def existingTags = tagsOutput.readLines().findAll { tag ->
+                        def tagPattern = ~/refs\/tags\/v\d+\.\d+\.\d+$/
+                        tagPattern.matcher(tag).find()
+                    }.collect { tag ->
+                        def parts = tag.split()
+                        def fullTag = parts[1] ?: parts.last() // Get the tag part from the split
+                        fullTag.replaceAll('refs/tags/', '')  // Extracting the tag name without 'refs/tags/'
+                    }
+
+                    withCredentials([sshUserPrivateKey(credentialsId: 'github', keyFileVariable: 'SSH_KEY')]) { 
+                        // GitHub SSH key hack
+                        sh 'mkdir -p ~/.ssh && ssh-keyscan github.com > ~/.ssh/known_hosts'
+                        // Fetch tags from the myrepo repository
+                        def myRepoTagsOutput = sh(script:"GIT_SSH_COMMAND=\"ssh -i $SSH_KEY\" git ls-remote --tags ${myRepo}", returnStdout: true).trim()
+
+                        // Extract existing tags from the myrepo output
+                        def myRepoTags = myRepoTagsOutput.tokenize('\n').collect { it.split()[1].replaceAll('refs/tags/', '') }
+
+                        // Find new tags
+                        def newTags = existingTags.findAll { tag -> !(tag in myRepoTags) }
+
+                        echo existingTags.toString()
+                        echo myRepoTags.toString()
+                        echo newTags.toString()
+                        
+                        // Create and push new tags
+                        sh "GIT_SSH_COMMAND=\"ssh -i $SSH_KEY\" git clone ${myRepo}"
+                        dir(repositoryName) {                                                    
+                            for (def tag in newTags) {                            
+                                sh "git tag ${tag}"
+                            }
+                            sh "GIT_SSH_COMMAND=\"ssh -i $SSH_KEY\" git push ${myRepo} --tags"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

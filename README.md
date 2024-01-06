@@ -1,15 +1,16 @@
-[![Docker Image CI](https://github.com/nazmang/cadvisor-docker/actions/workflows/docker-image.yml/badge.svg)](https://github.com/nazmang/cadvisor-docker/actions/workflows/docker-image.yml)
-# cAdvisor for ARM (https://github.com/google/cadvisor) 
-Forked from https://github.com/ZCube/cadvisor-docker
+# [![Docker Image CI](https://github.com/nazmang/cadvisor-docker/actions/workflows/docker-image.yml/badge.svg)](https://github.com/nazmang/cadvisor-docker/actions/workflows/docker-image.yml)
+
+## cAdvisor for ARM (<https://github.com/google/cadvisor>)
 
 * arm64, amd64 supported
 * Raspberry Pi tested
-* latest (v0.47.2) release 
+* latest (v0.47.2) release
 
-# Usage
+## Usage
 
-* From official readme (https://github.com/google/cadvisor)
-```
+* From official readme (<https://github.com/google/cadvisor>)
+
+```shell
 sudo docker run \
   --volume=/:/rootfs:ro \
   --volume=/var/run:/var/run:ro \
@@ -22,10 +23,11 @@ sudo docker run \
   nazman/cadvisor:latest
 ```
 
-# Build
+## Build
 
 Build using **docker buildx**
-```
+
+```shell
 TAG=v0.47.2
 docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 docker buildx rm mybuilder
@@ -37,11 +39,14 @@ docker buildx build --build-arg CADVISOR_VERSION="TAG" --pull . \
                     --platform linux/amd64,linux/arm64 \ 
                     --push
 ```
+
 Build using **build.sh** script
-````
+
+````shell
 TAG=v0.47.2
 sh ./build.sh $TAG
 ````
-# Links
-* https://hub.docker.com/r/nazman/cadvisor
 
+## Links
+
+* <https://hub.docker.com/r/nazman/cadvisor>
