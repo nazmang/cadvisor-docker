@@ -4,7 +4,7 @@
 
 * arm64, amd64 supported
 * Raspberry Pi tested
-* latest (v0.49.1) release
+* latest (v0.52.0) release
 
 ## Usage
 
@@ -28,7 +28,7 @@ sudo docker run \
 Build using **docker buildx**
 
 ```shell
-TAG=v0.49.1
+TAG=v0.52.0
 docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 docker buildx rm mybuilder
 docker buildx create --use --name mybuilder --driver docker-container
@@ -43,7 +43,7 @@ docker buildx build --build-arg CADVISOR_VERSION="TAG" --pull . \
 Build using **build.sh** script
 
 ````shell
-TAG=v0.49.1
+TAG=v0.52.0
 sh ./build.sh $TAG
 ````
 
